@@ -91,7 +91,7 @@
     "@bemedev/app-cli": "^0.1.7",
     "@bemedev/app-ts": "^1.0.4",
     "@bemedev/fsf": "^0.8.0",
-    "@bemedev/rollup-config": "^0.2.1",
+    "@bemedev/rollup-config": "^0.2.2",
     "@bemedev/vitest-alias": "^0.0.3",
     "@bemedev/vitest-exclude": "^0.1.1",
     "@bemedev/vitest-extended": "^1.5.3",

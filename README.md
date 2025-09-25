@@ -19,12 +19,23 @@ pnpm add @bemedev/rx-add-ons
 
 ## Features
 
-- **tapWhile**: Execute side effects conditionally based on a predicate
-- **createPausable**: Create pausable and resumable observables with state
-  control
-- Full TypeScript support with proper type definitions
-- Lightweight and tree-shakable
-- Comprehensive test coverage
+- **Enhanced tap operators**: `tapWhile` with optional index and
+  accumulated values access
+- **Enhanced filter operators**: `filter` and `filterChanged` with
+  predicate context (index, all values)
+- **Enhanced skip operators**: `skipWhile` with accumulated values tracking
+- **Advanced timeout operators**: `timeoutWithFallback` and
+  `timeoutWithFallbackReset` for graceful timeout handling
+- **Time-based grouping**: `groupByTime` and `groupByTimeWithReset` for
+  windowed data collection
+- **Pausable observables**: `createPausable` for complete flow control
+  (start, stop, pause, resume)
+- **Scan utilities**: `scanUntil` family for conditional accumulation
+- Full TypeScript support with comprehensive type definitions
+- Lightweight and tree-shakable with internal RxJS imports
+- Enhanced operators provide access to emission index and accumulated
+  values array
+- Comprehensive test coverage with 100+ test cases
 
 <br/>
 
@@ -50,7 +61,179 @@ of(1, 2, 3, 4, 5)
 // Output:
 // Value is greater than 3: 4
 // Value is greater than 3: 5
+
+// Enhanced tapWhile with index and accumulated values
+of('a', 'b', 'c', 'd')
+  .pipe(
+    tapWhile(
+      (value, index, all) => index < 2 && all.length <= 3,
+      (value, index, all) =>
+        console.log(`${value} at index ${index}, total: ${all.length}`),
+    ),
+  )
+  .subscribe();
+
+// Output:
+// a at index 0, total: 1
+// b at index 1, total: 2
 ```
+
+### filterChanged Operator
+
+Filter values that have changed compared to the previous emission:
+
+```typescript
+import { of } from 'rxjs';
+import { filterChanged } from '@bemedev/rx-add-ons';
+
+// Default equality comparison
+of(1, 1, 2, 2, 3, 1).pipe(filterChanged()).subscribe(console.log);
+// Output: 1, 2, 3, 1
+
+// Filter by property
+of(
+  { id: 1, name: 'John' },
+  { id: 1, name: 'Jane' },
+  { id: 2, name: 'Jane' },
+)
+  .pipe(filterChanged('id'))
+  .subscribe(console.log);
+// Output: { id: 1, name: 'John' }, { id: 2, name: 'Jane' }
+
+// Custom comparison function
+of(
+  { name: 'John', age: 25 },
+  { name: 'John', age: 26 },
+  { name: 'Jane', age: 26 },
+)
+  .pipe(filterChanged((prev, curr) => prev.name !== curr.name))
+  .subscribe(console.log);
+// Output: { name: 'John', age: 25 }, { name: 'Jane', age: 26 }
+
+// Enhanced filter with index and accumulated values
+of(1, 2, 3, 4, 5, 6)
+  .pipe(
+    filter((value, index, all) => {
+      // Filter even values only after index 2, and when we have at least 4 values
+      return index >= 2 && value % 2 === 0 && all.length >= 4;
+    }),
+  )
+  .subscribe(console.log);
+// Output: 4, 6
+```
+
+### scanUntil Operator
+
+Perform scan operation until a predicate condition is met:
+
+```typescript
+import { of } from 'rxjs';
+import { scanUntilWithValue } from '@bemedev/rx-add-ons';
+
+// Sum until reaching 10
+of(1, 2, 3, 4, 5)
+  .pipe(
+    scanUntilWithValue(
+      (acc, val) => acc + val,
+      0,
+      acc => acc >= 10,
+    ),
+  )
+  .subscribe(console.log);
+// Output: 0, 1, 3, 6, 10
+
+// Collect items until array has 3 elements
+of('a', 'b', 'c', 'd', 'e')
+  .pipe(
+    scanUntilWithValue(
+      (acc: string[], val) => [...acc, val],
+      [],
+      acc => acc.length >= 3,
+    ),
+  )
+  .subscribe(console.log);
+// Output: [], ['a'], ['a', 'b'], ['a', 'b', 'c']
+```
+
+### groupByTime Operator
+
+Group emissions by time windows:
+
+```typescript
+import { interval } from 'rxjs';
+import { groupByTime } from '@bemedev/rx-add-ons';
+
+// Group emissions every 1000ms
+interval(200).pipe(groupByTime(1000)).subscribe(console.log);
+// Output: [0, 1, 2, 3, 4], [5, 6, 7, 8, 9], ...
+
+// Group with maximum buffer size
+interval(100).pipe(groupByTime(1000, 3)).subscribe(console.log);
+// Output: [0, 1, 2], [3, 4, 5], [6, 7, 8], ...
+```
+
+### timeoutWithFallback Operator
+
+Switch to fallback Observable on timeout without throwing errors:
+
+```typescript
+import { timer, of } from 'rxjs';
+import { timeoutWithFallback } from '@bemedev/rx-add-ons';
+
+// Switch to fallback after 5 seconds
+timer(10000) // Emits after 10 seconds
+  .pipe(timeoutWithFallback(5000, of('timeout')))
+  .subscribe(console.log);
+// Output: 'timeout' (after 5 seconds)
+
+// Source emits before timeout
+timer(3000) // Emits after 3 seconds
+  .pipe(timeoutWithFallback(5000, of('timeout')))
+  .subscribe(console.log);
+// Output: 0 (after 3 seconds)
+
+// Reset timeout on each emission
+interval(2000)
+  .pipe(take(3), timeoutWithFallbackReset(3000, of('timeout')))
+  .subscribe(console.log);
+// Output: 0, 1, 2 (timeout resets on each emission)
+```
+
+### skipWhile Operator
+
+Enhanced skipWhile operator with access to emission index and accumulated
+values:
+
+```typescript
+import { of } from 'rxjs';
+import { skipWhile } from '@bemedev/rx-add-ons';
+
+// Skip while condition with index and accumulated values
+of(1, 2, 3, 4, 5, 6)
+  .pipe(
+    skipWhile((value, index, all) => {
+      // Skip while value is less than 4 and we're still at early indices
+      return value < 4 && index < 3 && all.length < 5;
+    }),
+  )
+  .subscribe(console.log);
+// Output: 4, 5, 6
+
+// Skip while sum of accumulated values is less than 10
+of(1, 2, 3, 4, 5)
+  .pipe(
+    skipWhile((value, _index, all) => {
+      const sum = all.reduce((acc, val) => acc + val, 0);
+      return sum < 10;
+    }),
+  )
+  .subscribe(console.log);
+// Output: 4, 5
+```
+
+// Value is greater than 3: 4 // Value is greater than 3: 5
+
+````
 
 ### createPausable Function
 
@@ -77,7 +260,7 @@ controller.command('start');
 controller.command('pause');
 controller.command('resume');
 controller.command('stop');
-```
+````
 
 You can also use with observer objects:
 
@@ -100,15 +283,20 @@ controller.start();
 
 ### tapWhile(predicate, sideEffect)
 
-An RxJS operator that executes a side effect only when the predicate
-returns true.
+Enhanced RxJS operator that executes a side effect only when the predicate
+returns true. The predicate and side effect functions receive additional
+context about the emission.
 
 **Parameters:**
 
-- `predicate: (value: T) => boolean` - Function that determines whether to
-  execute the side effect
-- `sideEffect: (value: T) => void` - Function to execute when predicate
-  returns true
+- `predicate: (value: T, index: number, all: T[]) => boolean` - Function
+  that determines whether to execute the side effect
+  - `value: T` - The current emitted value
+  - `index: number` - The zero-based index of the current emission
+  - `all: T[]` - Array of all values emitted so far (including current)
+- `sideEffect: (value: T, index: number, all: T[]) => void` - Function to
+  execute when predicate returns true
+  - Same parameters as predicate function
 
 **Returns:** `(source: Observable<T>) => Observable<T>`
 
@@ -131,6 +319,108 @@ Creates a pausable observable controller.
 - `command(action): void` - Execute a command ('start' | 'stop' | 'pause' |
   'resume')
 
+### filterChanged(compareBy?)
+
+Filter emissions based on changes with flexible comparison options.
+
+**Parameters:**
+
+- `compareBy?: keyof T | ((value: T) => any) | ((prev: T, curr: T) => boolean)` -
+  Optional comparison strategy
+
+**Returns:** `(source: Observable<T>) => Observable<T>`
+
+### scanUntilWithValue(accumulator, seed, predicate)
+
+Perform scan operation until a predicate condition is met.
+
+**Parameters:**
+
+- `accumulator: (acc: R, value: T, index: number) => R` - The accumulator
+  function
+- `seed: R` - The initial accumulation value
+- `predicate: (acc: R, value: T, index: number) => boolean` - Function that
+  determines when to stop
+
+**Returns:** `(source: Observable<T>) => Observable<R>`
+
+### groupByTime(windowSize, maxBufferSize?)
+
+Group emissions by time windows.
+
+**Parameters:**
+
+- `windowSize: number` - Time window size in milliseconds
+- `maxBufferSize?: number` - Optional maximum buffer size
+
+**Returns:** `(source: Observable<T>) => Observable<T[]>`
+
+### timeoutWithFallback(timeout, fallback)
+
+Switch to fallback Observable on timeout without throwing errors.
+
+**Parameters:**
+
+- `timeout: number` - Timeout duration in milliseconds
+- `fallback: Observable<T>` - Observable to switch to on timeout
+
+**Returns:** `(source: Observable<T>) => Observable<T>`
+
+### timeoutWithFallbackReset(timeout, fallback)
+
+Switch to fallback Observable on timeout, with timeout reset on each
+emission.
+
+**Parameters:**
+
+- `timeout: number` - Timeout duration in milliseconds (resets on each
+  emission)
+- `fallback: Observable<T>` - Observable to switch to on timeout
+
+**Returns:** `(source: Observable<T>) => Observable<T>`
+
+### filter(predicate)
+
+Enhanced filter operator with access to emission index and accumulated
+values array.
+
+**Parameters:**
+
+- `predicate: (value: T, index: number, all: T[]) => boolean` - Function
+  that determines whether to emit the value
+  - `value: T` - The current emitted value
+  - `index: number` - The zero-based index of the current emission
+  - `all: T[]` - Array of all values emitted so far (including current)
+
+**Returns:** `(source: Observable<T>) => Observable<T>`
+
+### skipWhile(predicate)
+
+Enhanced skipWhile operator that skips emitted values as long as the
+predicate returns true. Provides access to emission context.
+
+**Parameters:**
+
+- `predicate: (value: T, index: number, all: T[]) => boolean` - Function
+  that determines whether to continue skipping
+  - `value: T` - The current emitted value
+  - `index: number` - The zero-based index of the current emission
+  - `all: T[]` - Array of all values emitted so far (including current)
+
+**Returns:** `(source: Observable<T>) => Observable<T>`
+
+### groupByTimeWithReset(windowSize, maxBufferSize?, resetSignal?)
+
+Group emissions by time windows with optional reset capability.
+
+**Parameters:**
+
+- `windowSize: number` - Time window size in milliseconds
+- `maxBufferSize?: number` - Optional maximum buffer size
+- `resetSignal?: Observable<any>` - Optional signal to reset grouping
+
+**Returns:** `(source: Observable<T>) => Observable<T[]>`
+
 <br/>
 
 ## CHANGE_LOG
@@ -140,6 +430,34 @@ Creates a pausable observable controller.
 <summary>
 View changelog
 </summary>
+
+### Version [0.0.3] --> 19 décembre 2025
+
+- 🚀 **BREAKING CHANGES**: Opérateurs améliorés avec paramètres de contexte
+- ✨ Amélioration de l'opérateur `tapWhile` avec paramètres `index` et
+  `all`
+- 🔍 Amélioration de l'opérateur `filter` avec accès à l'index et aux
+  valeurs accumulées
+- ⏭️ Nouvel opérateur `skipWhile` avec logique de saut contextuelle
+- ⏰ Ajout de `timeoutWithFallbackReset` - timeout qui se remet à zéro à
+  chaque émission
+- 📊 Ajout de `groupByTimeWithReset` avec signal de remise à zéro
+- 🧪 Couverture de tests complète avec 100+ cas de test
+- 📚 Documentation complètement mise à jour avec exemples avancés
+
+### Version [0.0.2] --> 25 septembre 2025
+
+- ✨ Ajout de 4 nouveaux opérateurs RxJS personnalisés
+- 🔍 Ajout de l'opérateur `filterChanged` - filtre sophistiqué basé sur les
+  changements
+- 📊 Ajout de l'opérateur `scanUntil` - scan conditionnel jusqu'à un
+  prédicat
+- ⏰ Ajout de l'opérateur `groupByTime` - groupement par fenêtres
+  temporelles
+- 🔄 Ajout de l'opérateur `timeoutWithFallback` - timeout avec basculement
+  sans erreur
+- 🧪 Tests complets pour tous les nouveaux opérateurs
+- 📚 Documentation enrichie avec exemples d'utilisation
 
 ### Version [0.0.1] --> 25 septembre 2025
 

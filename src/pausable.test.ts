@@ -1,6 +1,6 @@
 import { interval, of, Subject, throwError } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { createPausable } from '../pausable';
+import { createPausable } from './pausable';
 
 vi.useFakeTimers();
 

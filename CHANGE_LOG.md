@@ -11,6 +11,82 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 <details>
 <summary>
 
+## **[0.0.3] - 2025/12/19** => _Enhanced Operators Release_
+
+</summary>
+
+- 🚀 **BREAKING CHANGES**: Enhanced operators now provide additional
+  context parameters
+- ✨ Enhanced `tapWhile` operator with `index` and `all` parameters for
+  advanced conditional logic
+- 🔍 Enhanced `filter` operator with access to emission index and
+  accumulated values array
+- ⏭️ New `skipWhile` operator with context-aware skipping logic
+- ⏰ Added `timeoutWithFallbackReset` operator for timeout that resets on
+  each emission
+- 📊 Added `groupByTimeWithReset` operator with reset signal capability
+- 🧪 Comprehensive test coverage with 100+ test cases covering all new
+  functionality
+- 📚 Complete documentation update with enhanced examples and API reference
+- 🔧 Improved TypeScript definitions with proper generic constraints
+- 🎯 All enhanced operators maintain backward compatibility where possible
+
+### Enhanced Operators Features
+
+#### tapWhile Operator Enhancements
+
+- Now provides `index` parameter (zero-based emission count)
+- Access to `all` parameter (array of all emitted values so far)
+- Enhanced predicate and side effect functions with additional context
+- Backward compatible with existing simple predicate functions
+
+#### filter Operator Enhancements
+
+- Context-aware filtering with emission index
+- Access to accumulated values array for complex filtering logic
+- Maintains standard RxJS filter behavior with enhanced capabilities
+- Support for complex conditional filtering based on emission history
+
+#### New skipWhile Operator
+
+- Enhanced skipWhile implementation with context parameters
+- Skip values based on emission index and accumulated values
+- Advanced skipping logic with access to emission history
+- Seamless integration with other RxJS operators
+
+#### Timeout Enhancements
+
+- `timeoutWithFallbackReset`: Timeout that resets on each emission
+- Graceful timeout handling without error propagation
+- Flexible fallback observable configuration
+
+#### Grouping Enhancements
+
+- `groupByTimeWithReset`: Time-based grouping with reset capability
+- Configurable buffer sizes and reset signals
+- Memory-efficient buffering for large streams
+
+### Development Infrastructure
+
+- Enhanced test suite with parametric testing
+- Comprehensive edge case coverage
+- Improved error handling and validation
+- Performance optimizations for large streams
+
+### Migration Guide
+
+- Existing `tapWhile` usage remains unchanged
+- New parameters are optional and backward compatible
+- Enhanced operators can be adopted gradually
+- Full TypeScript support for new parameter types
+
+</details>
+
+<br/>
+
+<details>
+<summary>
+
 ## **[0.0.1] - 2025/09/25** => _00:40_
 
 </summary>
