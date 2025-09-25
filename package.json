@@ -1,6 +1,6 @@
 {
   "name": "@bemedev/rx-add-ons",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A collection of RxJS operators and utilities to enhance reactive programming capabilities.",
   "author": {
     "email": "bri_lvi@icloud.com",

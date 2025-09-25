@@ -11,7 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 <details>
 <summary>
 
-## **[0.0.3] - 2025/12/19** => _Enhanced Operators Release_
+## **[0.0.2] - 2025/12/19** => _Enhanced Operators Release_
 
 </summary>
 
@@ -21,10 +21,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   advanced conditional logic
 - 🔍 Enhanced `filter` operator with access to emission index and
   accumulated values array
+- 🔄 Enhanced `filter.changed` operator with context-aware change detection
 - ⏭️ New `skipWhile` operator with context-aware skipping logic
-- ⏰ Added `timeoutWithFallbackReset` operator for timeout that resets on
-  each emission
-- 📊 Added `groupByTimeWithReset` operator with reset signal capability
+- ⏰ Added `tickWithFallback` (alias `tick`) operator for timeout that
+  resets on each emission
 - 🧪 Comprehensive test coverage with 100+ test cases covering all new
   functionality
 - 📚 Complete documentation update with enhanced examples and API reference
