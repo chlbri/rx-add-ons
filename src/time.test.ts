@@ -12,7 +12,7 @@ import {
   timeoutWithFallback,
   tick,
   timeout,
-} from './timeout';
+} from './time';
 
 describe('#01 => timeoutWithFallback', () => {
   beforeEach(() => {
