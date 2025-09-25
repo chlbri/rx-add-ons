@@ -1,7 +1,7 @@
 {
-  "name": "@bemedev///TODO",
+  "name": "@bemedev/rx-add-ons",
   "version": "0.0.1",
-  "description": "//TODO",
+  "description": "A collection of RxJS operators and utilities to enhance reactive programming capabilities.",
   "author": {
     "email": "bri_lvi@icloud.com",
     "name": "chlbri",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "//TODO"
+    "url": "https://github.com/chlbri/rx-add-ons.git"
   },
   "license": "MIT",
   "type": "module",
@@ -31,7 +31,14 @@
     }
   ],
   "keywords": [
-    "//TODO"
+    "reactive",
+    "reactive programming",
+    "rxjs",
+    "operators",
+    "stream",
+    "observables",
+    "typescript",
+    "bemedev"
   ],
   "files": [
     "lib",
@@ -66,6 +73,8 @@
     "test": "pnpm run test:coverage --no-coverage",
     "test:coverage": "vitest run",
     "test:watch": "vitest",
+    "typings": "app-typings generate",
+    "typings:watch": "pnpm run typings --watch",
     "upgrade": "pnpm upgrade --latest"
   },
   "size-limit": [
@@ -79,6 +88,8 @@
     }
   ],
   "devDependencies": {
+    "@bemedev/app-cli": "^0.1.7",
+    "@bemedev/app-ts": "^1.0.4",
     "@bemedev/fsf": "^0.8.0",
     "@bemedev/rollup-config": "^0.2.1",
     "@bemedev/vitest-alias": "^0.0.3",
@@ -103,6 +114,9 @@
     "tslib": "^2.8.1",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "rxjs": "^7.8.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

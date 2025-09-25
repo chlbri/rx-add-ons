@@ -1,26 +1,167 @@
-# Beatifull lib
+# @bemedev/rx-add-ons
 
-A beautifull description
+A TypeScript library providing additional RxJS operators for enhanced
+reactive programming.
 
 <br/>
 
-## Licence
+## Installation
 
-MIT
+```bash
+npm install @bemedev/rx-add-ons
+# or
+yarn add @bemedev/rx-add-ons
+# or
+pnpm add @bemedev/rx-add-ons
+```
+
+<br/>
+
+## Features
+
+- **tapWhile**: Execute side effects conditionally based on a predicate
+- **createPausable**: Create pausable and resumable observables with state
+  control
+- Full TypeScript support with proper type definitions
+- Lightweight and tree-shakable
+- Comprehensive test coverage
+
+<br/>
+
+## Usage
+
+### tapWhile Operator
+
+Execute side effects only when a predicate condition is met:
+
+```typescript
+import { of } from 'rxjs';
+import { tapWhile } from '@bemedev/rx-add-ons';
+
+of(1, 2, 3, 4, 5)
+  .pipe(
+    tapWhile(
+      value => value > 3, // predicate
+      value => console.log('Value is greater than 3:', value), // side effect
+    ),
+  )
+  .subscribe();
+
+// Output:
+// Value is greater than 3: 4
+// Value is greater than 3: 5
+```
+
+### createPausable Function
+
+Create observables that can be paused, resumed, started, and stopped:
+
+```typescript
+import { interval } from 'rxjs';
+import { createPausable } from '@bemedev/rx-add-ons';
+
+const source$ = interval(1000);
+
+const controller = createPausable(source$, value => {
+  console.log('Received:', value);
+});
+
+// Control the observable
+controller.start(); // Start emitting values
+controller.pause(); // Pause emission
+controller.resume(); // Resume emission
+controller.stop(); // Stop completely
+
+// Or use the command method
+controller.command('start');
+controller.command('pause');
+controller.command('resume');
+controller.command('stop');
+```
+
+You can also use with observer objects:
+
+```typescript
+import { createPausable } from '@bemedev/rx-add-ons';
+import { interval } from 'rxjs';
+
+const controller = createPausable(interval(1000), {
+  next: value => console.log('Next:', value),
+  error: err => console.error('Error:', err),
+  complete: () => console.log('Complete!'),
+});
+
+controller.start();
+```
+
+<br/>
+
+## API Reference
+
+### tapWhile(predicate, sideEffect)
+
+An RxJS operator that executes a side effect only when the predicate
+returns true.
+
+**Parameters:**
+
+- `predicate: (value: T) => boolean` - Function that determines whether to
+  execute the side effect
+- `sideEffect: (value: T) => void` - Function to execute when predicate
+  returns true
+
+**Returns:** `(source: Observable<T>) => Observable<T>`
+
+### createPausable(source$, observer?)
+
+Creates a pausable observable controller.
+
+**Parameters:**
+
+- `source$: Observable<T>` - The source observable to control
+- `observer?: Partial<Observer<T>> | ((value: T) => void)` - Optional
+  observer or next callback
+
+**Returns:** Object with control methods:
+
+- `start(): void` - Start or restart the observable
+- `stop(): void` - Stop the observable completely
+- `pause(): void` - Pause emission (only when running)
+- `resume(): void` - Resume emission (only when paused)
+- `command(action): void` - Execute a command ('start' | 'stop' | 'pause' |
+  'resume')
+
+<br/>
 
 ## CHANGE_LOG
 
 <details>
 
 <summary>
-...
+View changelog
 </summary>
 
-### Version [0.0.1] --> _date & hour_
+### Version [0.0.1] --> 25 septembre 2025
 
 - ✨ Première version de la bibliothèque
+- 🎯 Ajout de l'opérateur `tapWhile`
+- 🎮 Ajout de la fonction `createPausable`
+- 🧪 Tests complets avec couverture de code
+- 📚 Documentation complète avec exemples
 
 </details>
+
+<br/>
+
+## Contributing
+
+Contributions are welcome! Please read our contribution guide for details.
+
+<br/>
+
+## License
+
+MIT
 
 <br/>
 
@@ -36,4 +177,4 @@ chlbri (bri_lvi@icloud.com)
 
 ## Liens
 
-- [Documentation](https://github.com/chlbri/new-package)
+- [Documentation](https://github.com/chlbri/rx-add-ons)

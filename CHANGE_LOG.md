@@ -1,11 +1,71 @@
-## CHANGELOG
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on
+[Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <br/>
+
+<details>
+<summary>
+
+## **[0.0.1] - 2025/09/25** => _00:40_
+
+</summary>
+
+- ✨ Initial release of @bemedev/rx-add-ons
+- 🎯 Add `tapWhile` operator for conditional side effects
+- 🎮 Add `createPausable` function for pausable observables with state
+  control
+- 🧪 Comprehensive test coverage with 71 tests across all functionality
+- 📚 Complete documentation with usage examples and API reference
+- 🔧 Full TypeScript support with proper type definitions
+- 📦 Lightweight and tree-shakable package
+- ⚡ Support for hot and cold observables
+- 🛡️ Robust error handling and edge case coverage
+- 🎨 Follows RxJS conventions and patterns
+- <u>Test coverage **_100%_**</u>
+
+### Added
+
+#### tapWhile Operator
+
+- Execute side effects conditionally based on predicate functions
+- Transparent pass-through of values without modification
+- Error propagation from source, predicate, and side effect functions
+- Support for all data types including primitives, objects, null, and
+  undefined
+- Integration with other RxJS operators
+
+#### createPausable Function
+
+- Create pausable and resumable observables with full state control
+- Support for start, stop, pause, and resume operations
+- Command interface for programmatic control
+- Support for both function and object observers
+- Proper state transition validation and invalid transition handling
+- Works with both hot and cold observables
+- Memory leak prevention for large streams
+- Multiple start calls handling (restart functionality)
+
+#### Development Infrastructure
+
+- Complete test suite with numbered test organization
+- Build system with Rollup configuration
+- TypeScript configuration with strict typing
+- ESLint configuration for code quality
+- Size limit monitoring
+- Continuous integration setup
+
+</details>
+
 <br/>
 
-### Version [0.0.1] --> _date & hour_
+## License
 
-- ✨ Première version de la bibliothèque
+MIT
 
 <br/>
 
@@ -21,4 +81,4 @@ chlbri (bri_lvi@icloud.com)
 
 ## Liens
 
-- [Documentation](https://github.com/chlbri/new-package)
+- [Documentation](https://github.com/chlbri/rx-add-ons)
